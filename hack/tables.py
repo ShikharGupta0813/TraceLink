@@ -29,6 +29,11 @@ class SMS(db.Model):
     timestamp = db.Column(db.DateTime)
     message_type = db.Column(db.String(10))
 
+class AppInstalled(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    device_id = db.Column(db.Integer, db.ForeignKey('device.id'))
+    app_name = db.Column(db.String(25))
+    app_package = db.Column(db.String(25))
 
 with app.app_context():
     db.create_all()

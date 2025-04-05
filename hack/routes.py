@@ -1,6 +1,6 @@
 from flask import request, jsonify
 from hack import app, db
-from hack.tables import Case, Device, CallLog, SMS
+from hack.tables import Case, Device, CallLog, SMS, AppInstalled
 from datetime import datetime
 
 @app.route('/case', methods=['POST'])
@@ -75,6 +75,25 @@ def store_sms(device_id):
             db.session.commit()
 
         return jsonify({"message": "SMS stored successfully"})
+
+    else:
+        return jsonify({"error": "Request must be JSON"})
+
+@app.route('/upload_installed_apps/<int:device_id>', methods=['POST'])
+def store_installed_apps(device_id):
+    if request.is_json:
+        json_data = request.get_json()
+        data = json_data.get('apps')
+        for entry in data:
+            installed = AppInstalled(
+                device_id=device_id,
+                app_name=entry.get("name"),
+                app_package=entry.get("package")
+            )
+            db.session.add(installed)
+            db.session.commit()
+
+        return jsonify({"message": "App installed data stored successfully"})
 
     else:
         return jsonify({"error": "Request must be JSON"})
