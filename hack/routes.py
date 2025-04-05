@@ -3,7 +3,7 @@ from hack import app, db
 from hack.tables import Case, Device, CallLog, SMS, AppInstalled
 from datetime import datetime
 
-@app.route('/case', methods=['POST'])
+@app.route('/api/cases', methods=['POST'])
 def create_case():
     if request.is_json:
         data = request.get_json()
@@ -17,13 +17,34 @@ def create_case():
     else:
         return jsonify({"error" : "Request must be JSON"})
 
-@app.route('/device/<int:case_id>', methods=['POST'])
-def register_device(case_id):
+
+@app.route('/api/cases')
+def show_cases():
+    json_arr = []
+
+    cases = Case.query.all()
+    if not cases:
+        return jsonify({"message": "Cases not created yet"})
+
+    for log in cases:
+        obj = {
+            "id": log.id,
+            "name": log.name,
+            "created_at": log.created_at.strftime("%Y-%m-%d %H:%M:%S") if log.created_at else None,
+        }
+        json_arr.append(obj)
+
+    return jsonify({'cases': json_arr})
+
+
+@app.route('/api/devices', methods=['POST'])
+def register_device():
     if request.is_json:
         data = request.get_json()
 
-        device_type = data.get('device_type')
-        device_name = data.get('device_name')
+        case_id = data.get('caseId')
+        device_type = data.get('deviceType')
+        device_name = data.get('deviceName')
         device = Device(case_id=case_id, device_type=device_type,
                 device_name=device_name)
 
@@ -34,6 +55,26 @@ def register_device(case_id):
 
     else:
         return jsonify({"error" : "Request must be JSON"})
+
+
+@app.route('/api/cases/<int:case_id>/devices')
+def show_devices(case_id):
+    json_arr = []
+
+    devices = Device.query.filter_by(case_id=case_id)
+    if not devices:
+        return jsonify({"message": "Device not registered yet"})
+
+    for log in devices:
+        obj = {
+            "id": log.id,
+            "caseId": log.case_id,
+            "type": log.device_type,
+            "name": log.device_name
+        }
+        json_arr.append(obj)
+
+    return jsonify({'device': json_arr})
 
 
 @app.route('/upload_call_logs/<int:device_id>', methods=['POST'])
