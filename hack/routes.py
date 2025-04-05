@@ -2,6 +2,14 @@ from flask import request, jsonify
 from hack import app, db
 from hack.tables import Case, Device, CallLog, SMS, AppInstalled
 from datetime import datetime
+import subprocess
+
+def run_command(cmd):
+    try:
+        output = subprocess.check_output(cmd, shell=True, text=True)
+        return output
+    except subprocess.CalledProcessError as e:
+        return f"Error: {e}"
 
 @app.route('/api/cases', methods=['POST'])
 def create_case():
@@ -74,7 +82,7 @@ def show_devices(case_id):
         }
         json_arr.append(obj)
 
-    return jsonify({'device': json_arr})
+    return jsonify({'devices': json_arr})
 
 
 @app.route('/upload_call_logs/<int:device_id>', methods=['POST'])
@@ -202,3 +210,37 @@ def show_app_installed(device_id):
         json_arr.append(obj)
 
     return jsonify({'app_data': json_arr})
+
+
+# Extracting Operating System Information
+@app.route('/os/os_version')
+def os_version():
+    return jsonify({"output": run_command("uname -a")})
+
+@app.route('/os/kernel_logs')
+def kernel_logs():
+    return jsonify({"output": run_command("dmesg")})
+
+@app.route('/os/installed_apps')
+def installed_apps():
+    return jsonify({"output": run_command("apt list --installed")})
+
+@app.route('/os/last_logins')
+def last_logins():
+    return jsonify({"output": run_command("last")})
+
+@app.route('/os/current_connections')
+def current_connections():
+    return jsonify({"output": run_command("netstat -tulnp")})
+
+@app.route('/os/ip_config')
+def ip_config():
+    return jsonify({"output": run_command("ifconfig")})
+
+@app.route('/os/routing_table')
+def routing_table():
+    return jsonify({"output": run_command("ip route")})
+
+@app.route('/os/partition_info')
+def partition_info():
+    return jsonify({"output": run_command("lsblk")})
