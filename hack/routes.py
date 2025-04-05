@@ -58,18 +58,18 @@ def store_call_log(device_id):
         return jsonify({"error": "Request must be JSON"})
 
 
-@app.route('/upload_sms/<int:device_id>', methods=['POST'])
+@app.route('/upload_sms_logs/<int:device_id>', methods=['POST'])
 def store_sms(device_id):
     if request.is_json:
-        data = request.get_json()
+        json_data = request.get_json()
+        data = json_data.get('logs')
         for entry in data:
             sms = SMS(
                 device_id=device_id,
-                sender=entry.get("sender"),
-                receiver=entry.get("receiver"),
-                message_body=entry.get("message_body"),
-                timestamp=datetime.fromisoformat(entry.get("timestamp")),
-                message_type=entry.get("message_type")
+                sender=entry.get("address"),
+                message_body=entry.get("body"),
+                timestamp=datetime.fromisoformat(entry.get("date")),
+                message_type=entry.get("type")
             )
             db.session.add(sms)
             db.session.commit()

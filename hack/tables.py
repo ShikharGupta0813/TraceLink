@@ -25,10 +25,9 @@ class SMS(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     device_id = db.Column(db.Integer, db.ForeignKey('device.id'))
     sender = db.Column(db.String(100))
-    receiver = db.Column(db.String(100))
     message_body = db.Column(db.Text)
     timestamp = db.Column(db.DateTime)
-    message_type = db.Column(db.String(10))  # Sent, Received
+    message_type = db.Column(db.String(10))
 
 
 with app.app_context():
