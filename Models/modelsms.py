@@ -8,7 +8,7 @@ from sklearn.cluster import KMeans
 from datetime import datetime
 
 # Step 1: Connect to DB
-conn = sqlite3.connect("instance/database.db")
+conn = sqlite3.connect("../instance/database.db")
 
 # Step 2: Fetch SMS logs for all devices
 query = """

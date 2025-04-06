@@ -4,7 +4,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 # Step 1: Connect to DB
-conn = sqlite3.connect("instance/database.db")
+conn = sqlite3.connect("../instance/database.db")
 
 # Set your target case_id
 target_case_id = 1  # 🔁 Change this as needed

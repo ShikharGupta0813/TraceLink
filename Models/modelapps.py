@@ -6,7 +6,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 # Step 1: Connect to DB and fetch installed apps data
-conn = sqlite3.connect("instance/database.db")
+conn = sqlite3.connect("../instance/database.db")
 
 # Query to fetch installed apps
 query = """
