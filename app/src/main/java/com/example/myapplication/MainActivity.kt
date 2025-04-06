@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.CallLog
 import android.widget.Button
+import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -20,12 +21,17 @@ import java.net.URL
 
 class MainActivity : AppCompatActivity() {
 
+    lateinit var deviceIdInput : EditText
+    lateinit val ip = "10.100.237.49"
     private val REQUEST_CALL_LOG = 1
     private val REQUEST_SMS = 2
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        deviceIdInput = findViewById(R.id.device_id_input)
 
         val callLogButton = findViewById<Button>(R.id.call_log_btn)
         callLogButton.setOnClickListener {
@@ -64,7 +70,7 @@ class MainActivity : AppCompatActivity() {
         Thread {
             try {
                 // Calling the upload_call_logs route
-                val url = URL("http://10.100.237.49:5000/upload_call_logs/1")
+                val url = URL("http://10.100.237.49:5000/upload_call_logs/"+ deviceIdInput.text.toString())
                 val conn = url.openConnection() as HttpURLConnection
                 conn.requestMethod = "POST"
                 conn.setRequestProperty("Content-Type", "application/json; utf-8")
@@ -152,7 +158,7 @@ class MainActivity : AppCompatActivity() {
     private fun uploadSmsMessages(logs: List<Map<String, String>>) {
         Thread {
             try {
-                val url = URL("http://10.100.237.49:5000/upload_sms_logs/1")
+                val url = URL("http://10.100.237.49:5000/upload_sms_logs/"+ deviceIdInput.text.toString())
                 val conn = url.openConnection() as HttpURLConnection
                 conn.requestMethod = "POST"
                 conn.setRequestProperty("Content-Type", "application/json; utf-8")
@@ -233,7 +239,7 @@ class MainActivity : AppCompatActivity() {
     private fun uploadInstalledApps(apps: List<Map<String, String>>) {
         Thread {
             try {
-                val url = URL("http://10.100.237.49:5000/upload_installed_apps/1")
+                val url = URL("http://10.100.237.49:5000/upload_installed_apps/"+ deviceIdInput.text.toString())
                 val conn = url.openConnection() as HttpURLConnection
                 conn.requestMethod = "POST"
                 conn.setRequestProperty("Content-Type", "application/json; utf-8")

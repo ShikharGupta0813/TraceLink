@@ -14,6 +14,19 @@
         android:gravity="center"
         android:orientation="vertical">
 
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:hint="Device ID"
+            android:textColor="@color/white"
+            android:textColorHint="@color/white"
+            android:textSize="20sp"
+            android:background="@drawable/rounded_corner"
+            android:padding="18dp"
+            android:inputType="text"
+            android:id="@+id/device_id_input"/>
+
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
