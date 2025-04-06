@@ -148,7 +148,7 @@ def store_installed_apps(device_id):
         return jsonify({"error": "Request must be JSON"})
 
 
-@app.route('/show_call_log/<int:device_id>')
+@app.route('/api/devices/<int:device_id>/call-logs')
 def show_call_log(device_id):
     json_arr = []
 
@@ -170,7 +170,7 @@ def show_call_log(device_id):
     return jsonify({'call_log': json_arr})
 
 
-@app.route('/show_sms/<int:device_id>')
+@app.route('/api/devices/<int:device_id>/sms-logs')
 def show_sms(device_id):
     json_arr = []
 
@@ -192,7 +192,7 @@ def show_sms(device_id):
     return jsonify({'sms_data': json_arr})
 
 
-@app.route('/show_app_installed/<int:device_id>')
+@app.route('/api/devices/<int:device_id>/installed-apps')
 def show_app_installed(device_id):
     json_arr = []
 
