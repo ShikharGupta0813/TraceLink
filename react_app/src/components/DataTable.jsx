@@ -13,7 +13,7 @@ const DataTable = ({ data }) => {
         marginTop: '2rem',
         width: '100%',
         color: '#fff',
-        backgroundColor: '#4a0072',
+        backgroundColor: '#330b40',
         borderCollapse: 'collapse'
       }}>
         <thead>

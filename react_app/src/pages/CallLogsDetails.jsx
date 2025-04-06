@@ -27,7 +27,7 @@ const CallLogsDetails = () => {
   }
 
   return (
-    <div style={{ backgroundColor: '#1e1e2f', minHeight: '100vh', padding: '2rem' }}>
+    <div style={{ backgroundColor: '##1e1e2f', minHeight: '100vh', padding: '2rem' }}>
       <h1 style={{ color: '#fff', fontSize: '2.5rem', fontWeight: 'bold' }}>
         📞 Call Logs Details
       </h1>

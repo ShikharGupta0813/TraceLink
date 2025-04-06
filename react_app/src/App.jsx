@@ -11,6 +11,7 @@ import AppsPage from './pages/AppsPage.jsx';
 import OSDetailsPage from './pages/OS DetailsPage.jsx';
 import EvaluatePage from './pages/EvaluatePage';
 import CallLogInsightsPage from './pages/CallLogInsightsPage';
+import SmsDetails from './pages/smsInsightsPage.jsx';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
       <Route path="/device/:id/os-details" element={<OSDetailsPage />} />
       <Route path="/cases/:caseId/evaluate" element={<EvaluatePage />} />
       <Route path="/cases/:caseId/evaluate/calllogs" element={<CallLogInsightsPage />} />
+      <Route path="/cases/:caseId/evaluate/sms" element={<SmsDetails />} />
     </Routes>
   );
 }

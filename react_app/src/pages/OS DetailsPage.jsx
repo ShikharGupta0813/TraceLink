@@ -12,14 +12,14 @@ const OsDetailsPage = () => {
       .then(res => setOsDetails(res.data))
       .catch(err => console.error(err));
   }, [id]);
-
+  
   return (
-    <div style={{ backgroundColor: '#6a0dad', minHeight: '100vh', padding: '2rem' }}>
+    <div style={{ backgroundColor: '#1e1e2f', minHeight: '100vh', padding: '2rem' }}>
       <h1 style={{ color: '#fff' }}>🖥️ Operating System Details</h1>
 
       {osDetails ? (
         Object.entries(osDetails).map(([section, output]) => (
-          <div key={section} style={{ marginBottom: '2rem', background: '#4a0072', padding: '1rem', borderRadius: '12px' }}>
+          <div key={section} style={{ marginBottom: '2rem', background: '#1e0752', padding: '1rem', borderRadius: '12px' }}>
             <h2 style={{ color: '#fff', marginBottom: '0.5rem' }}>{section.replace(/_/g, ' ').toUpperCase()}</h2>
             <pre style={{ color: '#fff', whiteSpace: 'pre-wrap' }}>{output}</pre>
           </div>

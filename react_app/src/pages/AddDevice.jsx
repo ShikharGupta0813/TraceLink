@@ -61,97 +61,77 @@ function AddDevice() {
 
     return (
         <div className="container">
-            <h1 className="title">Add Device</h1>
-            <h2>Case: {caseName}</h2>
-
+        <h1 className="title">Case: {caseName}</h1>
+        <h2 >Add Device</h2>
+         {/* Case name is bigger and above the Add Device section */}
+    
+        <div className="case-form">
+            <button className="btn android" onClick={() => handleTypeClick('Android')}>
+                Android
+            </button>
+            <button className="btn os" onClick={() => handleTypeClick('Operating System')}>
+                Operating System
+            </button>
+        </div>
+    
+        {deviceType && (
             <div className="case-form">
-                <button className="btn android" onClick={() => handleTypeClick('Android')}>
-                    Android
-                </button>
-                <button className="btn os" onClick={() => handleTypeClick('Operating System')}>
-                    Operating System
+                <h3>Adding: {deviceType}</h3>
+                <input
+                    type="text"
+                    placeholder="Enter device name"
+                    value={deviceName}
+                    onChange={(e) => setDeviceName(e.target.value)}
+                />
+                <button className="btn submit" onClick={handleSubmit}>
+                    Submit Device
                 </button>
             </div>
-
-            {deviceType && (
-                <div className="case-form">
-                    <h3>Adding: {deviceType}</h3>
-                    <input
-                        type="text"
-                        placeholder="Enter device name"
-                        value={deviceName}
-                        onChange={(e) => setDeviceName(e.target.value)}
-                    />
-                    <button className="btn submit" onClick={handleSubmit}>
-                        Submit Device
-                    </button>
-                </div>
-            )}
-
-            {submitted && (
-                <p style={{ marginTop: '20px', color: 'lightgreen' }}>
-                    ✅ Device added successfully!
-                </p>
-            )}
-
-<div style={{ display: 'flex', gap: '20px', marginTop: '30px' }}>
-  <button
-    className="btn show"
-    style={{
-      flex: 1,
-      padding: '20px 40px',
-      fontSize: '1.5rem',
-      fontWeight: 'bold',
-      backgroundColor: '#4CAF50',
-      color: 'white',
-      borderRadius: '12px',
-      cursor: 'pointer',
-    }}
-    onClick={fetchDevices}
-  >
-    Show All Devices of This Case
-  </button>
-
-  <button
-    className="btn evaluate"
-    style={{
-      flex: 1,
-      padding: '20px 40px',
-      fontSize: '1.5rem',
-      fontWeight: 'bold',
-      backgroundColor: '#ff9800',
-      color: 'white',
-      borderRadius: '12px',
-      cursor: 'pointer',
-    }}
-    onClick={() => navigate(`/cases/${caseId}/evaluate`)}
-  >
-    Evaluate
-  </button>
-</div>
-
-            {/* Display Fetched Devices */}
-            {devices.length > 0 && (
-                <div className="device-grid" style={{ marginTop: '20px' }}>
-                    {devices.map((device) => (
-                        <button
-                            key={device.id}
-                            className="device-card"
-                            onClick={() =>
-                                navigate(`/cases/${caseId}/devices/${device.id}`, {
-                                    state: { device },
-                                })
-                            }
-                        >
-                            <p><strong>ID:</strong> {device.id}</p>
-                            <p><strong>Name:</strong> {device.name}</p>
-                            <p><strong>Type:</strong> {device.type}</p>
-                            <p><strong>Case ID:</strong> {device.caseId}</p>
-                        </button>
-                    ))}
-                </div>
-            )}
+        )}
+    
+        {submitted && (
+            <p className="success-message">✅ Device added successfully!</p>
+        )}
+    
+        <div style={{ display: 'flex', gap: '20px', marginTop: '30px' }}>
+            <button
+                className="btn show"
+                onClick={fetchDevices}
+            >
+                Show All Devices of This Case
+            </button>
+    
+            <button
+                className="btn evaluate"
+                onClick={() => navigate(`/cases/${caseId}/evaluate`)}
+            >
+                Evaluate
+            </button>
         </div>
+    
+        {/* Display Fetched Devices */}
+        {devices.length > 0 && (
+            <div className="device-grid" style={{ marginTop: '20px' }}>
+                {devices.map((device) => (
+                    <button
+                        key={device.id}
+                        className="device-card"
+                        onClick={() =>
+                            navigate(`/cases/${caseId}/devices/${device.id}`, {
+                                state: { device },
+                            })
+                        }
+                    >
+                        <p><strong>ID:</strong> {device.id}</p>
+                        <p><strong>Name:</strong> {device.name}</p>
+                        <p><strong>Type:</strong> {device.type}</p>
+                        <p><strong>Case ID:</strong> {device.caseId}</p>
+                    </button>
+                ))}
+            </div>
+        )}
+    </div>
+    
     );
 }
 

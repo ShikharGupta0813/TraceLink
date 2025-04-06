@@ -18,7 +18,7 @@ const SmsLogsPage = () => {
   
 
   return (
-    <div style={{ backgroundColor: '#6a0dad', minHeight: '100vh', padding: '2rem' }}>
+    <div style={{ backgroundColor: '#1e1e2f', minHeight: '100vh', padding: '2rem' }}>
       <h1 style={{ color: '#fff' }}>💬 SMS Logs</h1>
       <DataTable data={logs} />
     </div>

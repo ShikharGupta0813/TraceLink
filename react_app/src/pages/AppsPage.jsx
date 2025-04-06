@@ -14,7 +14,7 @@ const InstalledAppsPage = () => {
   }, [id]);
 
   return (
-    <div style={{ backgroundColor: '#6a0dad', minHeight: '100vh', padding: '2rem' }}>
+    <div style={{ backgroundColor: '#1e1e2f', minHeight: '100vh', padding: '2rem' }}>
       <h1 style={{ color: '#fff' }}>📦 Installed Applications</h1>
       <DataTable data={apps} />
     </div>

@@ -1,20 +1,19 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import '../index.css';
 import { useNavigate } from 'react-router-dom';
-
+import { FaMobileAlt, FaLaptop, FaSearch } from 'react-icons/fa'; // Importing FaSearch icon
+import '../index.css';
 
 function Home() {
   const navigate = useNavigate();
   const [cases, setCases] = useState([]);
-
   const [showingCases, setShowingCases] = useState(false);
 
   const fetchCases = async () => {
     try {
       const response = await axios.get('http://10.100.237.49:5000/api/cases');
-      console.log("Fetched cases:", response.data); // 👈 check what this logs
+      console.log("Fetched cases:", response.data);
       setCases(response.data.cases);
       setShowingCases(true);
     } catch (error) {
@@ -23,10 +22,18 @@ function Home() {
     }
   };
 
-
   return (
     <div className="container">
-      <h1 className="title">TraceLink</h1>
+      <h1 className="track-trace">
+        <FaSearch style={{ marginRight: '10px', fontSize: '8rem', color: '#fff' }} /> TraceLink
+      </h1>
+
+
+      <div className="project-description">
+        <p>
+          The **Multi-Device Forensics Tool** is a powerful and comprehensive solution designed for digital forensics investigations. This tool enables investigators to extract, analyze, and correlate critical data from multiple devices, including **Android phones** and **Operating System**. With its easy-to-use interface, the tool allows users to retrieve vital information such as call logs, text messages, app data, system logs, and much more. By supporting a variety of digital devices, it provides a versatile and scalable solution for analyzing and tracking data across different platforms, ensuring efficient and thorough investigations.
+        </p>
+      </div>
 
       <div>
         <Link to="/add-case">
@@ -35,6 +42,17 @@ function Home() {
         <button className="btn show" onClick={fetchCases}>
           Show All Cases
         </button>
+      </div>
+
+      <div className="icon-container">
+        <div className="icon">
+          <FaMobileAlt size={80} />
+          <p>Android</p>
+        </div>
+        <div className="icon">
+          <FaLaptop size={80} />
+          <p>Operating System</p>
+        </div>
       </div>
 
       {showingCases && (
@@ -57,8 +75,3 @@ function Home() {
 }
 
 export default Home;
-
-
-
-
-
