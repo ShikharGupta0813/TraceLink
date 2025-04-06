@@ -242,7 +242,7 @@ def call_log_insights(case_id):
         arr.append(d.id)
 
     data = fetch_data_from_db(arr)
-    print(data)
+
     call_df = pd.DataFrame([{
         'device_id': log['device_id'],
         'number': log['phone_number'],
