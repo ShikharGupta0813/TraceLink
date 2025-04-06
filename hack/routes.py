@@ -3,7 +3,10 @@ from hack import app, db
 from hack.tables import Case, Device, CallLog, SMS, AppInstalled
 from datetime import datetime
 import subprocess
-
+import pandas as pd
+from hack.Models.model import (fetch_data_from_db, analyze_call_durations
+        ,analyze_repeated_calls, analyze_unusual_timing, analyze_one_number_multiple_devices)
+from hack.Models.modelsms import fetch_sms_logs ,find_frequent_communication ,detect_duplicate_messages,detect_excessive_activity,detect_unusual_timing,aggregate_sms_stats,preprocess_sms_data
 def run_command(cmd):
     try:
         output = subprocess.check_output(cmd, shell=True, text=True)
@@ -225,3 +228,72 @@ def all_os_details():
         "routing_table": run_command("ip route"),
         "partition_info": run_command("lsblk")
     })
+
+
+@app.route('/api/cases/<int:case_id>/evaluate/calllogs')
+def call_log_insights(case_id):
+    device_arr = Device.query.filter_by(case_id=case_id).all()
+
+    if not device_arr:
+        return jsonify({"message" : "No such device found"})
+
+    arr = []
+    for d in device_arr:
+        arr.append(d.id)
+
+    data = fetch_data_from_db(arr)
+    print(data)
+    call_df = pd.DataFrame([{
+        'device_id': log['device_id'],
+        'number': log['phone_number'],
+        'duration': log['duration_seconds']
+    } for log in data])
+
+    df = analyze_repeated_calls(call_df,6)
+    df1 = analyze_call_durations(call_df, 60)
+    # df2 = analyze_unusual_timing(call_df)
+    df3 = analyze_one_number_multiple_devices(call_df,2)
+
+    result_json = df.to_dict(orient='records')
+    result_json1 = df1.to_dict(orient='records')
+    # result_json2 = df2.to_dict(orient='records')
+    result_json3 = df3.to_dict(orient='records')
+
+    return jsonify({"log": result_json, "log1": result_json1,
+                     "log3" : result_json3})
+
+@app.route('/api/cases/<int:case_id>/evaluate/sms')
+def sms_log_insights(case_id):
+    device_arr = Device.query.filter_by(case_id=case_id).all()
+
+    if not device_arr:
+        return jsonify({"message" : "No such device found"})
+
+    arr = []
+    for d in device_arr:
+        arr.append(d.id)
+
+    data = fetch_sms_logs(arr)
+    print(data)
+    call_df = pd.DataFrame([{
+        'device_id': log['device_id'],
+        'sender': log['sender'],
+        'timestamp': log['timestamp'],
+        'message_type':log['message_type'],
+        'message_body':log['message_body']
+    } for log in data])
+
+    print(call_df)
+    df=find_frequent_communication(call_df)
+    df1 = detect_duplicate_messages(call_df)
+    df9 = preprocess_sms_data(call_df)
+    df0= aggregate_sms_stats(df9)
+    df2 = detect_excessive_activity(df0)
+    # df4 = detect_unusual_timing(call_df)
+
+    result_json = df.to_dict(orient='records')
+    result_json1 = df1.to_dict(orient='records')
+    result_json3 = df2.to_dict(orient='records')
+    # result_json4 = df4.to_dict(orient='records')
+
+    return jsonify ({"log":result_json,"log2":result_json1,"log3":result_json3})
