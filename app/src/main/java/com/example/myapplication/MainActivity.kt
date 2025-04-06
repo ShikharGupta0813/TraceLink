@@ -22,7 +22,6 @@ import java.net.URL
 class MainActivity : AppCompatActivity() {
 
     lateinit var deviceIdInput : EditText
-    lateinit val ip = "10.100.237.49"
     private val REQUEST_CALL_LOG = 1
     private val REQUEST_SMS = 2
 
